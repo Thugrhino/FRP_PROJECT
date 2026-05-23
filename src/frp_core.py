@@ -39,6 +39,11 @@ try:
 except Exception:  # pragma: no cover - optional dependency guard
     xgb = None
 
+try:
+    import shap
+except Exception:  # pragma: no cover - optional dependency guard
+    shap = None
+
 warnings.filterwarnings("ignore", category=UserWarning)
 
 
@@ -536,6 +541,7 @@ def train_one_disease(disease: str, root: Path | None = None) -> dict[str, Any]:
     plot_roc_curves(disease, fitted, X_test, y_test, dirs["plots"])
     plot_confusion(disease, best_name, best_model, X_test, y_test, dirs["plots"])
     plot_feature_importance(disease, best_model, X_test, y_test, dirs["plots"])
+    plot_shap_explanations(disease, best_name, best_model, X_train, X_test, dirs["plots"])
 
     return {
         "disease": disease,
@@ -674,6 +680,99 @@ def plot_feature_importance(
     plt.close(fig)
 
 
+def _pipeline_model_input(model: Pipeline, X: pd.DataFrame) -> pd.DataFrame:
+    transformed: Any = X
+    feature_names = list(X.columns)
+    for _, step in model.steps[:-1]:
+        transformed = step.transform(transformed)
+        if hasattr(step, "get_feature_names_out"):
+            try:
+                feature_names = list(step.get_feature_names_out(feature_names))
+            except Exception:
+                feature_names = [f"feature_{idx}" for idx in range(transformed.shape[1])]
+        elif hasattr(transformed, "shape"):
+            feature_names = [f"feature_{idx}" for idx in range(transformed.shape[1])]
+    if hasattr(transformed, "toarray"):
+        transformed = transformed.toarray()
+    return pd.DataFrame(transformed, columns=feature_names, index=X.index)
+
+
+def _positive_class_shap_values(values: Any) -> np.ndarray:
+    if hasattr(values, "values"):
+        values = values.values
+    if isinstance(values, list):
+        values = values[1] if len(values) > 1 else values[0]
+    values = np.asarray(values)
+    if values.ndim == 3:
+        if values.shape[-1] > 1:
+            values = values[:, :, 1]
+        elif values.shape[0] > 1:
+            values = values[1]
+        else:
+            values = values[:, :, 0]
+    return values
+
+
+def plot_shap_explanations(
+    disease: str,
+    model_name: str,
+    model: Pipeline,
+    X_train: pd.DataFrame,
+    X_test: pd.DataFrame,
+    plot_dir: Path,
+) -> None:
+    if shap is None:
+        return
+
+    train_size = min(200, len(X_train))
+    explain_size = min(300, len(X_test))
+    X_background = X_train.sample(train_size, random_state=RANDOM_STATE)
+    X_explain_raw = X_test.sample(explain_size, random_state=RANDOM_STATE)
+    X_background_model = _pipeline_model_input(model, X_background)
+    X_explain_model = _pipeline_model_input(model, X_explain_raw)
+    estimator = model.named_steps.get("model", model)
+
+    try:
+        if isinstance(estimator, LogisticRegression):
+            explainer = shap.LinearExplainer(estimator, X_background_model)
+            shap_values = explainer.shap_values(X_explain_model)
+        else:
+            explainer = shap.TreeExplainer(estimator)
+            shap_values = explainer.shap_values(X_explain_model)
+    except Exception:
+        return
+
+    shap_values = _positive_class_shap_values(shap_values)
+
+    plt.figure(figsize=(10, 7))
+    shap.summary_plot(
+        shap_values,
+        X_explain_model,
+        show=False,
+        plot_type="dot",
+        color_bar=True,
+        max_display=15,
+    )
+    plt.title(f"{disease} SHAP Summary - {model_name}", color=INK, fontweight="bold", pad=14)
+    plt.tight_layout()
+    plt.savefig(plot_dir / f"shap_summary_{disease.lower()}.png", dpi=150, bbox_inches="tight")
+    plt.close()
+
+    plt.figure(figsize=(9, 6.5))
+    shap.summary_plot(
+        shap_values,
+        X_explain_model,
+        show=False,
+        plot_type="bar",
+        color=MEDICAL_GREEN,
+        max_display=15,
+    )
+    plt.title(f"{disease} SHAP Feature Importance - {model_name}", color=INK, fontweight="bold", pad=14)
+    plt.tight_layout()
+    plt.savefig(plot_dir / f"shap_bar_{disease.lower()}.png", dpi=150, bbox_inches="tight")
+    plt.close()
+
+
 def plot_dashboard_summary(summaries: list[dict[str, Any]], report_dir: Path, plot_dir: Path) -> None:
     rows = []
     for item in summaries:
@@ -702,6 +801,38 @@ def plot_dashboard_summary(summaries: list[dict[str, Any]], report_dir: Path, pl
     plt.close(fig)
 
 
+def _format_metric_table(metrics: pd.DataFrame, columns: list[str] | None = None) -> list[str]:
+    columns = columns or [
+        "Accuracy",
+        "Precision",
+        "Recall",
+        "F1-Score",
+        "ROC-AUC",
+        "PR-AUC",
+        "CV ROC-AUC",
+        "CV Std",
+        "Brier",
+    ]
+    table = metrics.reset_index()
+    columns = ["Model"] + [column for column in columns if column in table.columns]
+    table = table[columns].copy()
+    for column in table.columns:
+        if column != "Model":
+            table[column] = table[column].map(lambda value: f"{float(value):.3f}")
+
+    widths = {
+        column: max(len(column), *(len(str(value)) for value in table[column]))
+        for column in table.columns
+    }
+    header = " | ".join(column.ljust(widths[column]) for column in table.columns)
+    divider = "-+-".join("-" * widths[column] for column in table.columns)
+    rows = [
+        " | ".join(str(row[column]).ljust(widths[column]) for column in table.columns).rstrip()
+        for _, row in table.iterrows()
+    ]
+    return [header, divider, *rows]
+
+
 def write_experiment_report(summaries: list[dict[str, Any]], report_dir: Path) -> None:
     lines = [
         "FRP PROJECT - MODEL TRAINING REPORT",
@@ -723,7 +854,17 @@ def write_experiment_report(summaries: list[dict[str, Any]], report_dir: Path) -
                 f"Rows after cleaning: {item['rows']:,}",
                 f"Engineered features: {item['features']}",
                 f"Selected model: {item['best_model']}",
-                metrics.round(3).to_string(),
+                "",
+                "Full metrics table:",
+                *_format_metric_table(metrics.round(3)),
+                "",
+                "Logistic Regression and Random Forest focus:",
+                *_format_metric_table(
+                    metrics.loc[
+                        metrics.index.intersection(["Logistic Regression", "Random Forest"])
+                    ].round(3),
+                    ["Accuracy", "Precision", "Recall", "F1-Score", "ROC-AUC", "CV ROC-AUC", "CV Std"],
+                ),
                 "",
             ]
         )

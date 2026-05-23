@@ -11,12 +11,20 @@ Diabetes
 Rows after cleaning: 64,020
 Engineered features: 23
 Selected model: XGBoost
-                     Accuracy  Precision  Recall  F1-Score  ROC-AUC  PR-AUC  Brier  CV ROC-AUC  CV Std  Suspicious
-Model                                                                                                             
-Logistic Regression    73.532     74.644  74.611    74.628   80.868  79.433  0.178      81.122   0.188       False
-Random Forest          72.587     72.773  75.823    74.267   79.788  78.942  0.188      80.039   0.164       False
-Gradient Boosting      73.461     72.351  79.521    75.767   80.974  79.813  0.177      81.209   0.264       False
-XGBoost                73.618     73.518  77.260    75.343   81.029  79.831  0.177      81.267   0.260       False
+
+Full metrics table:
+Model               | Accuracy | Precision | Recall | F1-Score | ROC-AUC | PR-AUC | CV ROC-AUC | CV Std | Brier
+--------------------+----------+-----------+--------+----------+---------+--------+------------+--------+------
+Logistic Regression | 73.532   | 74.644    | 74.611 | 74.628   | 80.868  | 79.433 | 81.122     | 0.188  | 0.178
+Random Forest       | 72.587   | 72.773    | 75.823 | 74.267   | 79.788  | 78.942 | 80.039     | 0.164  | 0.188
+Gradient Boosting   | 73.461   | 72.351    | 79.521 | 75.767   | 80.974  | 79.813 | 81.209     | 0.264  | 0.177
+XGBoost             | 73.618   | 73.518    | 77.260 | 75.343   | 81.029  | 79.831 | 81.267     | 0.260  | 0.177
+
+Logistic Regression and Random Forest focus:
+Model               | Accuracy | Precision | Recall | F1-Score | ROC-AUC | CV ROC-AUC | CV Std
+--------------------+----------+-----------+--------+----------+---------+------------+-------
+Logistic Regression | 73.532   | 74.644    | 74.611 | 74.628   | 80.868  | 81.122     | 0.188
+Random Forest       | 72.587   | 72.773    | 75.823 | 74.267   | 79.788  | 80.039     | 0.164
 
 
 Hypertension
@@ -24,12 +32,20 @@ Hypertension
 Rows after cleaning: 26,050
 Engineered features: 20
 Selected model: Gradient Boosting
-                     Accuracy  Precision  Recall  F1-Score  ROC-AUC  PR-AUC  Brier  CV ROC-AUC  CV Std  Suspicious
-Model                                                                                                             
-Logistic Regression    84.587     82.815  90.632    86.547   90.652  89.732  0.117      91.309   0.464       False
-Random Forest          86.430     85.634  90.351    87.929   94.253  94.719  0.111      94.813   0.271       False
-Gradient Boosting      88.292     86.013  93.860    89.765   95.848  96.330  0.085      96.404   0.208       False
-XGBoost                88.311     87.362  91.930    89.588   95.415  95.894  0.087      95.990   0.236       False
+
+Full metrics table:
+Model               | Accuracy | Precision | Recall | F1-Score | ROC-AUC | PR-AUC | CV ROC-AUC | CV Std | Brier
+--------------------+----------+-----------+--------+----------+---------+--------+------------+--------+------
+Logistic Regression | 84.587   | 82.815    | 90.632 | 86.547   | 90.652  | 89.732 | 91.309     | 0.464  | 0.117
+Random Forest       | 86.430   | 85.634    | 90.351 | 87.929   | 94.253  | 94.719 | 94.813     | 0.271  | 0.111
+Gradient Boosting   | 88.292   | 86.013    | 93.860 | 89.765   | 95.848  | 96.330 | 96.404     | 0.208  | 0.085
+XGBoost             | 88.311   | 87.362    | 91.930 | 89.588   | 95.415  | 95.894 | 95.990     | 0.236  | 0.087
+
+Logistic Regression and Random Forest focus:
+Model               | Accuracy | Precision | Recall | F1-Score | ROC-AUC | CV ROC-AUC | CV Std
+--------------------+----------+-----------+--------+----------+---------+------------+-------
+Logistic Regression | 84.587   | 82.815    | 90.632 | 86.547   | 90.652  | 91.309     | 0.464
+Random Forest       | 86.430   | 85.634    | 90.351 | 87.929   | 94.253  | 94.813     | 0.271
 
 Warning: The provided hypertension CSV is a heart-disease-style dataset; results should be treated as hypertension-risk proxy modeling, not a clinical hypertension diagnosis.
 
@@ -38,10 +54,18 @@ Stroke
 Rows after cleaning: 40,852
 Engineered features: 16
 Selected model: XGBoost
-                     Accuracy  Precision  Recall  F1-Score  ROC-AUC  PR-AUC  Brier  CV ROC-AUC  CV Std  Suspicious
-Model                                                                                                             
-Logistic Regression    68.143     70.562  62.142    66.085   74.093  72.691  0.207      75.227   0.238       False
-Random Forest          68.486     72.018  60.353    65.671   76.828  76.501  0.206      77.569   0.233       False
-Gradient Boosting      70.028     73.341  62.828    67.678   78.664  77.663  0.194      79.504   0.342       False
-XGBoost                69.991     73.345  62.705    67.609   78.842  77.875  0.193      79.684   0.218       False
+
+Full metrics table:
+Model               | Accuracy | Precision | Recall | F1-Score | ROC-AUC | PR-AUC | CV ROC-AUC | CV Std | Brier
+--------------------+----------+-----------+--------+----------+---------+--------+------------+--------+------
+Logistic Regression | 68.143   | 70.562    | 62.142 | 66.085   | 74.093  | 72.691 | 75.227     | 0.238  | 0.207
+Random Forest       | 68.486   | 72.018    | 60.353 | 65.671   | 76.828  | 76.501 | 77.569     | 0.233  | 0.206
+Gradient Boosting   | 70.028   | 73.341    | 62.828 | 67.678   | 78.664  | 77.663 | 79.504     | 0.342  | 0.194
+XGBoost             | 69.991   | 73.345    | 62.705 | 67.609   | 78.842  | 77.875 | 79.684     | 0.218  | 0.193
+
+Logistic Regression and Random Forest focus:
+Model               | Accuracy | Precision | Recall | F1-Score | ROC-AUC | CV ROC-AUC | CV Std
+--------------------+----------+-----------+--------+----------+---------+------------+-------
+Logistic Regression | 68.143   | 70.562    | 62.142 | 66.085   | 74.093  | 75.227     | 0.238
+Random Forest       | 68.486   | 72.018    | 60.353 | 65.671   | 76.828  | 77.569     | 0.233
 

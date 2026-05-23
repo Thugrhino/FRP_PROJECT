@@ -570,6 +570,8 @@ with tab_visuals:
             "ROC Curves",
             "Confusion Matrix",
             "Feature Importance",
+            "SHAP Summary",
+            "SHAP Bar Chart",
         ],
     )
     plot_map = {
@@ -578,6 +580,8 @@ with tab_visuals:
         "ROC Curves": f"roc_{selected_disease.lower()}.png",
         "Confusion Matrix": f"cm_{selected_disease.lower()}.png",
         "Feature Importance": f"fi_{selected_disease.lower()}.png",
+        "SHAP Summary": f"shap_summary_{selected_disease.lower()}.png",
+        "SHAP Bar Chart": f"shap_bar_{selected_disease.lower()}.png",
     }
     plot_path = DIRS["plots"] / plot_map[plot_type]
     if plot_path.exists():
