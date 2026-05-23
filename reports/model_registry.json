@@ -1,0 +1,56 @@
+{
+  "datasets": {
+    "Diabetes": {
+      "disease": "Diabetes",
+      "rows_raw": 70692,
+      "rows_cleaned": 64020,
+      "rows_removed": 6672,
+      "duplicate_rows_removed": 6672,
+      "missing_values_before": 0,
+      "missing_values_after_cleaning": 0,
+      "positive_rate": 0.5217
+    },
+    "Hypertension": {
+      "disease": "Hypertension",
+      "rows_raw": 26083,
+      "rows_cleaned": 26050,
+      "rows_removed": 33,
+      "duplicate_rows_removed": 0,
+      "missing_values_before": 25,
+      "missing_values_after_cleaning": 25,
+      "positive_rate": 0.5469
+    },
+    "Stroke": {
+      "disease": "Stroke",
+      "rows_raw": 40910,
+      "rows_cleaned": 40852,
+      "rows_removed": 58,
+      "duplicate_rows_removed": 0,
+      "missing_values_before": 3,
+      "missing_values_after_cleaning": 3,
+      "positive_rate": 0.4994
+    }
+  },
+  "models": {
+    "Diabetes": {
+      "best_model": "XGBoost",
+      "rows": 64020,
+      "features": 23,
+      "warnings": []
+    },
+    "Hypertension": {
+      "best_model": "Gradient Boosting",
+      "rows": 26050,
+      "features": 20,
+      "warnings": [
+        "The provided hypertension CSV is a heart-disease-style dataset; results should be treated as hypertension-risk proxy modeling, not a clinical hypertension diagnosis."
+      ]
+    },
+    "Stroke": {
+      "best_model": "XGBoost",
+      "rows": 40852,
+      "features": 16,
+      "warnings": []
+    }
+  }
+}

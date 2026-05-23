@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.streamlit/secrets.toml
+
+# Raw and processed datasets are not required for the hosted dashboard.
+# Keep them locally unless you intentionally want them in a public repo.
+data/raw/
+data/processed/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

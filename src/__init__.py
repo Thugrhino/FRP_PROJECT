@@ -1,0 +1,1 @@
+"""FRP project package."""
