@@ -14,7 +14,7 @@ DIRS = project_dirs(ROOT)
 
 
 st.set_page_config(
-    page_title="FRP Multimorbidity Risk Dashboard",
+    page_title="Multimorbidity Risk Dashboard",
     page_icon="medical",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -453,7 +453,7 @@ st.markdown(
     """
 <div class="hero">
     <div>
-        <h1>FRP Multimorbidity Risk Dashboard</h1>
+        <h1>Multimorbidity Risk Dashboard</h1>
         <p>Cleaned datasets, validated model selection, and patient-level risk estimates for diabetes, hypertension-risk proxy, and stroke.</p>
     </div>
     <div class="badge">Research use only</div>
